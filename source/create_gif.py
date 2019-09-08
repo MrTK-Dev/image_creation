@@ -18,15 +18,16 @@ os.chdir(dname)
 from PIL import Image
 import random as Rng
 import image_creation as IC
+import change_color as CC
 
-def CreateGIF():
-    names = ["bild0", "bild1", "bild2", "bild3", "bild4", "bild3", "bild2", "bild1"]
+def CreateGIF(listName):
+    imageNames = listName
     images = []
-    for n in names:
-        frame = Image.open("gif_test/" + n + ".png")
+    for n in imageNames:
+        frame = Image.open("appliedColor_stars/" + n + ".png")
         images.append(frame)
     
-    images[0].save('test_2.gif',
+    images[0].save('ColorAnimation.gif',
                     save_all=True,
                     append_images=images[1:],
                     duration=300,
@@ -37,7 +38,14 @@ def CreateGIF():
 
 
 
+def ExportGIF():
+    listName = []
+    for counter in range(10):
+        print(str(counter))
+        newfileName = "newColoreditedPic" + str(counter)
+        listName.append(newfileName)
+        print(newfileName)
+    print(listName)
+    CreateGIF(listName)
 
-
-
-CreateGIF()
+ExportGIF()
