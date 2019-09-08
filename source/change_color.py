@@ -47,7 +47,7 @@ def ApplyColor(fileName):
             rng_ColorG = Rng.randrange(255)
             rng_ColorB = Rng.randrange(255)
             StarColorRGB = (rng_ColorR, rng_ColorG, rng_ColorB)
-            
+
             for PixelY in range(StarY, (StarY + Box.height)):
                 for PixelX in range(StarX, (StarX + Box.width)):
                     if imageData[PixelX, PixelY] != (0, 0, 43):

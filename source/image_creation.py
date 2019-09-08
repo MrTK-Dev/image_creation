@@ -21,19 +21,21 @@ import json
 
 
 #Globals
-fileName = "test.png"
+fileName = "background.png"
 fileName_Star = "testStar.png"
 jsonFileName = "booleanMap.json"
 
 StarImage = Image.open("stars/" + "star8x8" + '.png', 'r')
-StarImage_2 = Image.open("stars/" + "star8x8" + '.png', 'r')
+StarImage_2 = Image.open("stars/" + "star8x8_2" + '.png', 'r')
 BackgroundImage = Image.open("background/" + fileName, 'r')
+
+StarList = [StarImage, StarImage_2]
 
 #Data Base
 data = {}
 
 class RandomCalculated():
-    rngRange = 20000
+    rngRange = 200000
     rngMininum = 1150
     StarBubble = 3
 
@@ -71,12 +73,21 @@ def PlaceStarsOnBackground():
             else:
                 boolPainted = False
 
+            #adds a "star" variable
+            #makes a new string for data save
+            if boolPainted == True:
+                #add amount of starList
+                rng_Star = Rng.randrange(2)
+                StarKind = rng_Star
+                boolPainted_StarKind = "t - " + str(StarKind) 
+            else:
+                boolPainted_StarKind = "f"
+
             #Data Declaration
             data[boxName] = []
             data[boxName].append({
-                'x': boxCoordinateX,
-                'y': boxCoordinateY,
-                'bool': boolPainted
+                #'bool': boolPainted
+                'code': boolPainted_StarKind
             })
 
             #switches to offset_y if offset_x is done
@@ -101,35 +112,35 @@ def PlaceStarsOnBackground():
         while boxX <= (Box.CountMaxX - 1) and boxY <= (Box.CountMaxY - 1):
 
             for entry in data[boxName]:
-                boxCoordinateX = entry['x']
-                boxCoordinateY = entry['y']
-                boolPainted = entry['bool']
+                codePainted = entry['code']
+                boolPainted = codePainted.startswith("t")
 
                 #Other Boxes
                 if boxY != 0:
                     boxName_Up = str(boxX) + '.0 - ' + str(boxY - 1) + '.0'
                     for entry_Up in data[boxName_Up]:
-                        boolPainted_Up = entry_Up['bool']
+                        code_Up = entry_Up['code']
+                        boolPainted_Up = code_Up.startswith("t")
+
                 else:
                     boolPainted_Up = False
 
                 if boxY != (Box.CountMaxY - 1):
                     boxName_Down = str(boxX) + '.0 - ' + str(boxY + 1) + '.0'
                     for entry_Down in data[boxName_Down]:
-                        boolPainted_Down = entry_Down['bool']
+                        code_Down = entry_Down['code']
+                        boolPainted_Down = code_Down.startswith("t")
                 else:
                     boolPainted_Down = False
 
                 if boolPainted == True and boolPainted_Up == False and boolPainted_Down == False:
-                    boolPainted = True
+                    boolPainted = codePainted
                 else:
-                    boolPainted = False
-                
+                    boolPainted = "f"
+
                 data[boxName] = []
                 data[boxName].append({
-                    'x': boxCoordinateX,
-                    'y': boxCoordinateY,
-                    'bool': boolPainted
+                    'code': boolPainted
                 })
             
             boxX = boxX + 1
@@ -157,9 +168,8 @@ def PlaceStarsOnBackground():
         while boxX <= (Box.CountMaxX - 1) and boxY <= (Box.CountMaxY - 1):
 
             for entry in data[boxName]:
-                boxCoordinateX = entry['x']
-                boxCoordinateY = entry['y']
-                boolPainted = entry['bool']
+                codePainted = entry['code']
+                boolPainted = codePainted.startswith("t")
 
                 #scannt nur Boxen, die aktiv sind #saveRAM
                 if boolPainted == True:
@@ -206,7 +216,8 @@ def PlaceStarsOnBackground():
                             boxNameBubble = str(countCoordinateX) + '.0 - ' + str(countCoordinateY) + '.0'
 
                             for entry in data[boxNameBubble]:
-                                boolPaintedBubble = entry['bool']
+                                codePaintedBubble = entry['code']
+                                boolPaintedBubble = codePaintedBubble.startswith("t")
 
                             if boolPaintedBubble == True:
                                 countStars = countStars + 1
@@ -221,12 +232,18 @@ def PlaceStarsOnBackground():
                 else:
                     boolPaintedBubble = False
 
+                #add Random Image [Star]
+
+
+
+                if boolPaintedBubble == True:
+                    boolPaintedBubble = codePainted
+                else:
+                    boolPaintedBubble = "f"
 
                 data[boxName] = []
                 data[boxName].append({
-                    'x': boxCoordinateX,
-                    'y': boxCoordinateY,
-                    'bool': boolPaintedBubble
+                    'code': boolPaintedBubble
                 })
 
             boxX = boxX + 1
@@ -260,20 +277,22 @@ def PasteImage(newfileName):
     while boxX <= (Box.CountMaxX - 1) and boxY <= (Box.CountMaxY - 1):
 
         for entry in data[boxName]:
-            boxCoordinateX = entry['x']
-            boxCoordinateY = entry['y']
-            boolPainted = entry['bool']
-
-            offset_x = int(boxCoordinateX * Box.width)
-            offset_y = int(boxCoordinateY * Box.height)
-            offset = (offset_x, offset_y)
+            codePainted = entry['code']
+            boolPainted = codePainted.startswith("t")
 
             if boolPainted == True:
-                rng_Star = Rng.randrange(2)
-                if rng_Star == 0:
-                    BackgroundImage.paste(StarImage, offset)
-                else:
-                    BackgroundImage.paste(StarImage_2, offset)
+
+                boxCoordinateXY = boxName.split(" - ")
+                boxCoordinateX = float(boxCoordinateXY[0])
+                boxCoordinateY = float(boxCoordinateXY[1])
+
+                offset_x = int(boxCoordinateX * Box.width)
+                offset_y = int(boxCoordinateY * Box.height)
+                offset = (offset_x, offset_y)
+
+                codePainted2 = codePainted.split(" - ")
+                StarKindnum = int(codePainted2[1])
+                BackgroundImage.paste(StarList[StarKindnum], offset)
         
         boxX = boxX + 1
 
